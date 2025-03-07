@@ -1,0 +1,41 @@
+@startuml usecaseReservation_diagram
+
+left to right direction
+
+skinparam {
+    defaultFontName Source Code Pro
+    defaultFontSize 14
+    shadowing true
+    arrowColor #666666
+    actorBorderColor #666666
+    usecaseBorderColor #333333
+    rectangleBorderColor #333333
+    rectangleBackgroundColor #f0f0f0
+    componentStyle uml2
+    ArrowThickness 1.5
+}
+
+actor User as user 
+
+rectangle "Reservation" {
+    usecase "Get All Reservations" as getallreservations
+    usecase "Get Reservation" as getreservation
+    usecase "Create Reservation" as createreservation
+    usecase "Update Reservation" as updatereservation
+    usecase "Delete Reservation" as deletereservation
+}
+
+user -- getreservation       #Blue
+user -- createreservation    #Blue
+user -- updatereservation    #Blue
+user -- deletereservation    #Blue
+
+actor Admin as admin
+
+getallreservations -- admin  #Red
+getreservation     -- admin  #Red
+createreservation  -- admin  #Red
+updatereservation  -- admin  #Red
+deletereservation  -- admin  #Red
+
+@enduml

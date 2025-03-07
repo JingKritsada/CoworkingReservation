@@ -1,0 +1,111 @@
+@startuml classDiagram
+
+' left to right direction
+
+skinparam {
+    Linetype ortho
+    defaultFontName Source Code Pro
+    defaultFontSize 14
+    shadowing true
+    componentStyle uml2
+    MinClassWidth 400
+    ArrowThickness 1.5
+    ClassMargin 1000
+    padding 3
+}
+
+class User {
+    +id: int
+    +name: string
+    +email: string
+    +password: string
+    +telephone: string
+    +role: string
+    +constructor(user)
+    +findAll(): Promise
+    +findById(id): Promise
+    +findByEmail(email): Promise
+    +create(newUser): Promise
+    +update(id, user): Promise
+    +remove(id): Promise
+    +getSignedJwtToken(id): string
+    +matchPassword(enteredPassword): Promise
+}
+
+class Space {
+    +space_id: int
+    +name: string
+    +address: string
+    +telephone: string
+    +open_time: string
+    +close_time: string
+    +constructor(space)
+    +findAll(options): Promise
+    +findById(id): Promise
+    +create(space): Promise
+    +update(id, space): Promise
+    +remove(id): Promise
+}
+
+class Reservation {
+    +reservation_id: int
+    +user_id: int
+    +space_id: int
+    +reservation_date: string
+    +constructor(reservation)
+    +findAll(conditions): Promise
+    +findById(id, conditions): Promise
+    +create(reservation): Promise
+    +update(id, reservation): Promise
+    +remove(id): Promise
+}
+
+class AuthController {
+    +register(req, res, next): void
+    +login(req, res, next): void
+    +logout(req, res, next): void
+    +getMe(req, res, next): void
+    +getUsers(req, res, next): void
+    +getUser(req, res, next): void
+    +updateUser(req, res, next): void
+    +deleteUser(req, res, next): void
+    -sendTokenResponse(user, statusCode, res): void
+}
+
+class SpaceController {
+    +getSpaces(req, res, next): void
+    +getSpace(req, res, next): void
+    +createSpace(req, res, next): void
+    +updateSpace(req, res, next): void
+    +deleteSpace(req, res, next): void
+}
+
+class ReservationController {
+    +getReservations(req, res, next): void
+    +getReservation(req, res, next): void
+    +createReservation(req, res, next): void
+    +updateReservation(req, res, next): void
+    +deleteReservation(req, res, next): void
+}
+
+class AuthMiddleware <<middleware>> {
+    +protect(req, res, next): void
+    +authorize(...roles): void
+}
+
+AuthController --> User                     #Red
+AuthController --> AuthMiddleware           #Red
+
+SpaceController --> Space                   #Green
+SpaceController --> AuthMiddleware          #Green
+
+ReservationController --> AuthMiddleware    #Blue
+ReservationController --> Reservation       #Blue
+ReservationController --> Space             #Blue
+ReservationController --> User              #Blue
+
+AuthMiddleware -[hidden]-> User
+AuthMiddleware -[hidden]-> Space
+AuthMiddleware -[hidden]-> Reservation
+
+@enduml

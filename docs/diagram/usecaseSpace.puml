@@ -1,0 +1,39 @@
+@startuml usecaseSpace_diagram
+
+left to right direction
+
+skinparam {
+    defaultFontName Source Code Pro
+    defaultFontSize 14
+    shadowing true
+    arrowColor #666666
+    actorBorderColor #666666
+    usecaseBorderColor #333333
+    rectangleBorderColor #333333
+    rectangleBackgroundColor #f0f0f0
+    componentStyle uml2
+    ArrowThickness 1.5
+}
+
+actor User as user 
+
+rectangle "Space" {
+    usecase "Get All Spaces" as getallspaces
+    usecase "Get Space" as getspace
+    usecase "Create Space" as createspace
+    usecase "Update Space" as updatespace
+    usecase "Delete Space" as deletespace
+}
+
+user -- getallspaces    #Blue
+user -- getspace        #Blue
+
+actor Admin as admin
+
+getallspaces -- admin   #Red
+getspace     -- admin   #Red
+createspace  -- admin   #Red
+updatespace  -- admin   #Red
+deletespace  -- admin   #Red
+
+@enduml

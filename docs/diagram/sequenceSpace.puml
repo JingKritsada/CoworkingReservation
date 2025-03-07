@@ -1,0 +1,148 @@
+@startuml sequenceSpace
+
+skinparam {
+    defaultFontName Source Code Pro
+    defaultFontSize 18
+    shadowing true
+    componentStyle uml2
+    MinClassWidth 150
+    ParticipantPadding 80
+    ArrowThickness 1.5
+    SequenceDividerBorderThickness 3
+}
+
+actor "**User**" as User
+participant "**Spaces Router**" as SR     #98FB98
+participant "**Auth Middleware**" as AM   #FF6347
+participant "**Spaces Controller**" as SC #FFD700
+participant "**Space Model**" as SM       #87CEEB
+database "**SQL Database**" as DB         #FFDEAD
+
+skinparam shadowing false
+
+== Get all spaces ==
+
+User -> SR: GET /api/v1/spaces
+activate User                           #D3D3D3
+activate SR                             #98FB98
+SR -> SC: getSpaces
+activate SC                             #FFD700
+SC -> SM: Space.findAll
+activate SM                             #87CEEB
+SM --> DB: Query all spaces
+activate DB                             #FFDEAD
+DB --> SM: spaces
+deactivate DB
+SM --> SC: spaces
+deactivate SM
+SC -> User: 200 OK
+deactivate SC
+deactivate SR
+deactivate User
+
+== Get a space by id ==
+
+User -> SR: GET /api/v1/spaces/:id
+activate User                           #D3D3D3
+activate SR                             #98FB98
+SR -> SC: getSpace
+activate SC                             #FFD700
+SC -> SM: Space.findById
+activate SM                             #87CEEB
+SM --> DB: Query space by ID
+activate DB                             #FFDEAD
+DB --> SM: space
+deactivate DB
+SM --> SC: space
+deactivate SM
+SC -> User: 200 OK / 404 Not Found
+deactivate SC
+deactivate SR
+deactivate User
+
+== Create a new space ==
+
+User -> SR: POST /api/v1/spaces
+activate User                           #D3D3D3
+activate SR                             #98FB98
+SR -> AM: protect, authorize('admin')
+activate AM                             #FF6347
+AM -> SC: createSpace
+activate SC                             #FFD700
+SC -> SM: Space.create
+activate SM                             #87CEEB
+SM --> DB: INSERT new space
+activate DB                             #FFDEAD
+DB --> SM: new space
+deactivate DB
+SM --> SC: new space
+deactivate SM
+SC -> User: 201 Created
+deactivate SC
+deactivate AM
+deactivate SR
+deactivate User
+
+== Update a space ==
+
+User -> SR: PUT /api/v1/spaces/:id
+activate User                           #D3D3D3
+activate SR                             #98FB98
+SR -> AM: protect, authorize('admin')
+activate AM                             #FF6347
+AM -> SC: updateSpace
+activate SC                             #FFD700
+SC -> SM: Space.findById
+activate SM                             #87CEEB
+SM --> DB: Query space by ID
+activate DB                             #FFDEAD
+DB --> SM: space
+deactivate DB
+SM --> SC: space
+deactivate SM
+SC -> SM: Space.update
+activate SM                             #87CEEB
+SM --> DB: UPDATE space
+activate DB                             #FFDEAD
+DB --> SM: updated space
+deactivate DB
+SM --> SC: updated space
+deactivate SM
+SC -> User: 200 OK / 404 Not Found
+deactivate SC
+deactivate AM
+deactivate SR
+deactivate User
+
+== Delete a space ==
+
+User -> SR: DELETE /api/v1/spaces/:id
+activate User                           #D3D3D3
+activate SR                             #98FB98
+SR -> AM: protect, authorize('admin')
+activate AM                             #FF6347
+AM -> SC: deleteSpace
+activate SC                             #FFD700
+SC -> SM: Space.findById
+activate SM                             #87CEEB
+SM --> DB: Query space by ID
+activate DB                             #FFDEAD
+DB --> SM: space
+deactivate DB
+SM --> SC: space
+deactivate SM
+SC -> SM: Space.remove
+activate SM                             #87CEEB
+SM --> DB: DELETE space
+activate DB                             #FFDEAD
+DB --> SM: success
+deactivate DB
+SM --> SC: success
+deactivate SM
+SC -> User: 200 OK / 404 Not Found
+deactivate SC
+deactivate AM
+deactivate SR
+deactivate User
+
+@enduml

@@ -1,0 +1,102 @@
+@startuml sequenceAuth
+
+skinparam {
+    defaultFontName Source Code Pro
+    defaultFontSize 18
+    shadowing true
+    componentStyle uml2
+    MinClassWidth 150
+    ParticipantPadding 60
+    ArrowThickness 1.5
+    SequenceDividerBorderThickness 3
+}
+
+actor "**User**" as User
+participant "**Auth Router**" as AR     #98FB98
+participant "**Auth Middleware**" as AM #FF6347
+participant "**Auth Controller**" as AC #FFD700
+participant "**User Model**" as UM      #87CEEB
+database "**SQL Database**" as DB       #FFDEAD
+
+skinparam shadowing false
+
+== Register new user ==
+
+User -> AR: POST /api/v1/auth/register
+activate User                           #D3D3D3
+activate AR                             #98FB98
+AR -> AC: register
+activate AC                             #FFD700
+AC -> UM: User.create
+activate UM                             #87CEEB
+UM --> DB: INSERT a new users 
+activate DB                             #FFDEAD
+DB --> UM: new user
+deactivate DB
+UM --> AC: new user
+deactivate UM
+AC -> User: 201 Created
+deactivate AC
+deactivate AR
+deactivate User
+
+== Login user ==
+
+User -> AR: POST /api/v1/auth/login
+activate User                           #D3D3D3
+activate AR                             #98FB98
+AR -> AC: login
+activate AC                             #FFD700
+AC -> UM: User.findByEmail
+activate UM                             #87CEEB
+UM --> DB: Query a user by email
+activate DB                             #FFDEAD
+DB --> UM: user
+deactivate DB
+UM --> AC: user
+deactivate UM
+AC -> UM: user.matchPassword
+activate UM                             #87CEEB
+UM --> AC: true/false
+deactivate UM
+AC -> User: 200 OK / 401 Unauthorized
+deactivate AC
+deactivate AR
+deactivate User
+
+== Logout user ==
+
+User -> AR: GET /api/v1/auth/logout
+activate User                           #D3D3D3
+activate AR                             #98FB98
+AR -> AC: logout
+activate AC                             #FFD700
+AC -> User: 200 OK
+deactivate AC
+deactivate AR
+deactivate User
+
+== Get User Info ==
+
+User -> AR: GET /api/v1/auth/me
+activate User                           #D3D3D3
+activate AR                             #98FB98
+AR -> AM: protect
+activate AM                             #FF6347
+AM -> AC: getMe
+activate AC                             #FFD700
+AC -> UM: User.findById
+activate UM                             #87CEEB
+UM --> DB: Query a user by id
+activate DB                             #FFDEAD
+DB --> UM: user
+deactivate DB
+UM --> AC: user
+deactivate UM
+AC -> User: 200 OK
+deactivate AC
+deactivate AM
+deactivate AR
+deactivate User
+
+@enduml

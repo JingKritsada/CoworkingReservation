@@ -1,0 +1,47 @@
+@startuml coworking_reservation_ER
+
+skinparam linetype ortho
+
+skinparam {
+    defaultFontName Source Code Pro
+    defaultFontSize 14
+    shadowing true
+    componentStyle uml2
+    padding 2
+    MinClassWidth 400
+    ArrowThickness 1.5
+}
+
+entity users {
+    * id: SERIAL [PK]
+    --
+    * name: VARCHAR(255) NOT NULL
+    * email: VARCHAR(255) NOT NULL UNIQUE
+    * password: VARCHAR(255) NOT NULL
+    * telephone: VARCHAR(255) NOT NULL
+    * role: VARCHAR(255) NOT NULL DEFAULT 'user'
+}
+
+entity spaces {
+    * space_id: SERIAL [PK]
+    --
+    * name: VARCHAR(255) NOT NULL
+    * address: VARCHAR(255) NOT NULL
+    * telephone: VARCHAR(255) NOT NULL
+    * open_time: TIME NOT NULL
+    * close_time: TIME NOT NULL
+}
+
+entity reservations {
+    * reservation_id: SERIAL [PK]
+    --
+    * user_id: INT NOT NULL
+    * space_id: INT NOT NULL
+    * reservation_date: DATE NOT NULL
+    created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+users ||..o{ reservations : "make"
+spaces ||..o{ reservations : "reserved"
+
+@enduml

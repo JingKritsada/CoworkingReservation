@@ -1,0 +1,154 @@
+@startuml sequenceReservation
+
+skinparam {
+    defaultFontName Source Code Pro
+    defaultFontSize 18
+    shadowing true
+    componentStyle uml2
+    MinClassWidth 150
+    ParticipantPadding 80
+    ArrowThickness 1.5
+    SequenceDividerBorderThickness 3
+}
+
+actor "**User**" as User
+participant "**Reservations Router**" as RR     #98FB98
+participant "**Auth Middleware**" as AM         #FF6347
+participant "**Reservations Controller**" as RC #FFD700
+participant "**Reservation Model**" as RM       #87CEEB
+database "**SQL Database**" as DB               #FFDEAD
+
+skinparam shadowing false
+
+== Get all reservations ==
+
+User -> RR: GET /api/v1/reservations
+activate User                                 #D3D3D3
+activate RR                                   #98FB98
+RR -> AM: protect
+activate AM                                   #FF6347
+AM -> RC: getReservations
+activate RC                                   #FFD700
+RC -> RM: Reservation.findAll
+activate RM                                   #87CEEB
+RM --> DB: Query all reservations
+activate DB                                   #FFDEAD
+DB --> RM: reservations
+deactivate DB
+RM --> RC: reservations
+deactivate RM
+RC -> User: 200 OK
+deactivate RC
+deactivate AM
+deactivate RR
+deactivate User
+
+== Get reservation by ID ==
+
+User -> RR: GET /api/v1/reservations/:id
+activate User                                 #D3D3D3
+activate RR                                   #98FB98
+RR -> AM: protect
+activate AM                                   #FF6347
+AM -> RC: getReservation
+activate RC                                   #FFD700
+RC -> RM: Reservation.findById
+activate RM                                   #87CEEB
+RM --> DB: Query reservation by ID
+activate DB                                   #FFDEAD
+DB --> RM: reservation
+deactivate DB
+RM --> RC: reservation
+deactivate RM
+RC -> User: 200 OK / 404 Not Found
+deactivate RC
+deactivate AM
+deactivate RR
+deactivate User
+
+== Create a new reservation ==
+
+User -> RR: POST /api/v1/spaces/:spaceId/reservations
+activate User                                 #D3D3D3
+activate RR                                   #98FB98
+RR -> AM: protect
+activate AM                                   #FF6347
+AM -> RC: createReservation
+activate RC                                   #FFD700
+RC -> RM: Reservation.create
+activate RM                                   #87CEEB
+RM --> DB: INSERT new reservation
+activate DB                                   #FFDEAD
+DB --> RM: new reservation
+deactivate DB
+RM --> RC: new reservation
+deactivate RM
+RC -> User: 201 Created
+deactivate RC
+deactivate AM
+deactivate RR
+deactivate User
+
+== Update a reservation ==
+
+User -> RR: PUT /api/v1/reservations/:id
+activate User                                 #D3D3D3
+activate RR                                   #98FB98
+RR -> AM: protect
+activate AM                                   #FF6347
+AM -> RC: updateReservation
+activate RC                                   #FFD700
+RC -> RM: Reservation.findById
+activate RM                                   #87CEEB
+RM --> DB: Query reservation by ID
+activate DB                                   #FFDEAD
+DB --> RM: reservation
+deactivate DB
+RM --> RC: reservation
+deactivate RM
+RC -> RM: Reservation.update
+activate RM                                   #87CEEB
+RM --> DB: UPDATE reservation
+activate DB                                   #FFDEAD
+DB --> RM: updated reservation
+deactivate DB
+RM --> RC: updated reservation
+deactivate RM
+RC -> User: 200 OK / 404 Not Found
+deactivate RC
+deactivate AM
+deactivate RR
+deactivate User
+
+== Delete a reservation ==
+
+User -> RR: DELETE /api/v1/reservations/:id
+activate User                                 #D3D3D3
+activate RR                                   #98FB98
+RR -> AM: protect
+activate AM                                   #FF6347
+AM -> RC: deleteReservation
+activate RC                                   #FFD700
+RC -> RM: Reservation.findById
+activate RM                                   #87CEEB
+RM --> DB: Query reservation by ID
+activate DB                                   #FFDEAD
+DB --> RM: reservation
+deactivate DB
+RM --> RC: reservation
+deactivate RM
+RC -> RM: Reservation.remove
+activate RM                                   #87CEEB
+RM --> DB: DELETE reservation
+activate DB                                   #FFDEAD
+DB --> RM: success
+deactivate DB
+RM --> RC: success
+deactivate RM
+RC -> User: 200 OK / 404 Not Found
+deactivate RC
+deactivate AM
+deactivate RR
+deactivate User
+
+@enduml
