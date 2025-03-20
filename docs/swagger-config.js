@@ -12,6 +12,10 @@ const swaggerDefinition = {
             url: `http://localhost:${PORT}/api/v1/`,
             description: 'Development server',
         },
+        {
+            url: `https://coworking-reservation-backend.vercel.app/api/v1/`,
+            description: 'Production server',
+        },
     ],
     components: {
         securitySchemes: {
