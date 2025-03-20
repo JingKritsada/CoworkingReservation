@@ -1,11 +1,11 @@
 const { Pool } = require('pg');
+require('dotenv').config({ path: './config/config.env' });
 
 const connection = new Pool({
-    host: 'localhost',
-    port: 5432,
-    user: 'admin',
-    password: 'root',
-    database: 'coworking_db',
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false,
+    },
 });
 
 // create userTable
